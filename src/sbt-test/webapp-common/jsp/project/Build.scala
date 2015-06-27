@@ -1,7 +1,9 @@
 import sbt._
 import skinny.sbt.servlet._
+import skinny.servlet.{ServletPlugin, ServletKeys}
 import ServletPlugin._
-import PluginKeys._
+import skinny.servlet.ServletKeys
+import ServletKeys._
 import Keys._
 import ContainerDep.containerDepSettings
 

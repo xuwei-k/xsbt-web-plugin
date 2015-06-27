@@ -1,4 +1,4 @@
-package skinny.sbt.servlet
+package skinny.servlet
 
 import sbt._
 import classpath._
@@ -10,7 +10,7 @@ import scala.xml.NodeSeq
 object Runner {
 
   def runners = Seq(
-    "skinny.sbt.servlet.Jetty9Runner"
+    "skinny.servlet.Jetty9Runner"
   )
 
   def packages = Seq("org.eclipse.jetty")

@@ -1,8 +1,8 @@
-package skinny.sbt.servlet
+package skinny.servlet
 
 import sbt._
 import Keys._
-import PluginKeys._
+import ServletKeys._
 
 object ServletPlugin extends Plugin {
 

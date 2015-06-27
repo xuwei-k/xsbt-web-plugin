@@ -1,9 +1,9 @@
-package skinny.sbt.servlet
+package skinny.servlet
 
 import sbt.{ `package` => _, _ }
 import Def.Initialize
 import Keys._
-import PluginKeys._
+import ServletKeys._
 import _root_.sbt.Defaults.{ packageTaskSettings, inDependencies }
 
 object WarPlugin extends Plugin {

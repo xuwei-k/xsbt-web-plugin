@@ -1,7 +1,7 @@
 import sbt._
-import skinny.sbt.servlet._
+import skinny.servlet._
 import ServletPlugin._
-import PluginKeys._
+import ServletKeys._
 import Keys._
 
 object MyBuild extends Build {

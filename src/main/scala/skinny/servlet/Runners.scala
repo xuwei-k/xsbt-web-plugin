@@ -1,4 +1,4 @@
-package skinny.sbt.servlet
+package skinny.servlet
 
 import sbt._
 import classpath._

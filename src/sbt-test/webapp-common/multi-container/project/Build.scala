@@ -1,7 +1,8 @@
 import sbt._
 import skinny.sbt.servlet._
+import skinny.servlet.{Container, WebappPlugin, ServletKeys}
 import WebappPlugin._
-import PluginKeys._
+import ServletKeys._
 import Keys._
 import Project.Initialize
 import ContainerDep.containerDepSettings

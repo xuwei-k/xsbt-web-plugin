@@ -1,9 +1,9 @@
-package skinny.sbt.servlet
+package skinny.servlet
 
 import sbt._
 import scala.xml.NodeSeq
 
-object PluginKeys extends Plugin {
+object ServletKeys extends Plugin {
 
   lazy val DefaultConf = Compile
   lazy val DefaultClasspathConf = Runtime
