@@ -1,4 +1,4 @@
-package com.earldouglas.xwptemplate
+package example.xwptemplate
 
 import scala.xml.NodeSeq
 import javax.servlet.http.HttpServlet

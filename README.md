@@ -1,60 +1,32 @@
-[![Build Status](https://travis-ci.org/earldouglas/xsbt-web-plugin.png?branch=master)](https://travis-ci.org/earldouglas/xsbt-web-plugin)
+## sbt-servlet-plugin
 
-## News
+An sbt plugin to build Servlet applications which is based on xsbt-web-plugin 0.9.1.
 
-**July 13, 2014**
+## Why forking xsbt-web-plugin 0.9.1?
 
-Preview the upcoming changes in version 1.0.0 - see the [1.0 branch](https://github.com/earldouglas/xsbt-web-plugin/tree/1.0#quick-reference).
+xsbt-web-plugin 0.9 is very suitable for our use case.
 
-## About
-
-xsbt-web-plugin is an extension to [sbt](http://www.scala-sbt.org/) for building enterprise Web applications based on the [Java J2EE Servlet specification](http://en.wikipedia.org/wiki/Java_Servlet).
-
-xsbt-web-plugin supports both Scala and Java, and is best suited for projects that:
-
-* Deploy to common cloud platforms (e.g. [Google App Engine](https://developers.google.com/appengine/), [Heroku](https://www.heroku.com/), [Elastic Beanstalk](https://console.aws.amazon.com/elasticbeanstalk/home), [Jelastic](http://jelastic.com/))
-* Deploy to production J2EE environments (e.g. Tomcat, Jetty, GlassFish, WebSphere)
-* Incorporate J2EE libraries (e.g. [JSP](http://en.wikipedia.org/wiki/JavaServer_Pages), [JSF](http://en.wikipedia.org/wiki/JavaServer_Faces), [EJB](http://en.wikipedia.org/wiki/Ejb))
-* Utilize J2EE technologies (e.g. [`Servlet`](http://docs.oracle.com/javaee/6/api/javax/servlet/Servlet.html)s, [`Filter`](http://docs.oracle.com/javaee/6/api/javax/servlet/Filter.html)s, [JNDI](http://en.wikipedia.org/wiki/Java_Naming_and_Directory_Interface))
-* Have a specific need to be packaged as a [*.war* file](https://en.wikipedia.org/wiki/WAR_%28Sun_file_format%29)
+The version implementation allows to reload Scalate templates without restarting Servlet containers and Servlet invocation is faster than 1.x.
 
 ## Getting started 
 
-The quickest way to get started is to clone the [xwp-template](https://github.com/JamesEarlDouglas/xwp-template) project, which sets up the necessary directories, files, and configuration for a basic xsbt-web-plugin project.
+### project/plugins.sbt
 
-For more information, please see the [wiki](http://github.com/earldouglas/xsbt-web-plugin/wiki/).
-
-## Quick reference
-
-First, add xsbt-web-plugin to *project/plugins.sbt*:
+Add this sbt plugin to your `project/plugins.sbt`.
 
 ```scala
-addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.9.0")
+addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "0.1")
 ```
 
-For [*.sbt* build definitions](http://www.scala-sbt.org/release/docs/Getting-Started/Basic-Def.html), inject the plugin settings in *build.sbt*:
+### build.sbt
 
 ```scala
-seq(webSettings :_*)
+servletSettings
 ```
 
-For [*.scala* build definitions](http://www.scala-sbt.org/release/docs/Getting-Started/Full-Def.html), inject the plugin settings in *Build.scala*:
+### project/Build.scala or build.sbt
 
-```scala
-import com.earldouglas.xsbtwebplugin.WebPlugin
-
-Project(..., settings = Project.defaultSettings ++ WebPlugin.webSettings)
-```
-
-Add a Servlet API to the *provided* configuration:
-
-```scala
-libraryDependencies += "javax.servlet" % "javax.servlet-api" % "3.0.1" % "provided"
-```
-
-Include either Jetty or Tomcat in the *container* configuration:
-
-*Jetty:*
+Add Jetty dependencies into "container" scope.
 
 ```scala
 libraryDependencies ++= Seq(
@@ -63,12 +35,8 @@ libraryDependencies ++= Seq(
 )
 ```
 
-*Tomcat:*
 
-```scala
-libraryDependencies ++= Seq(
-  "org.apache.tomcat.embed" % "tomcat-embed-core"         % "7.0.22" % "container",
-  "org.apache.tomcat.embed" % "tomcat-embed-logging-juli" % "7.0.22" % "container",
-  "org.apache.tomcat.embed" % "tomcat-embed-jasper"       % "7.0.22" % "container"
-)
-```
+## License
+
+the BSD 2-Clause license
+

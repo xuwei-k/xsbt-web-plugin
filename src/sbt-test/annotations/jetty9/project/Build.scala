@@ -1,13 +1,13 @@
 import sbt._
-import com.earldouglas.xsbtwebplugin._
-import WebPlugin._
+import skinny.sbt.servlet._
+import ServletPlugin._
 import PluginKeys._
 import Keys._
 
 object MyBuild extends Build {
   override def projects = Seq(root)
 
-  lazy val root = Project("root", file("."), settings = Defaults.defaultSettings ++ webSettings ++ rootSettings)
+  lazy val root = Project("root", file("."), settings = servletSettings ++ rootSettings)
 
   def Conf = config("container")
 

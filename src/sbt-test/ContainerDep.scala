@@ -8,48 +8,17 @@ import sbt.Keys._
  * supported servlet containers.
  */
 object ContainerDep {
-  def containerDepSettings: Seq[Project.Setting[_]] = {
-    val container = System.getProperty("plugin.container")
-    
+
+  private val jettyVersion = "9.2.11.v20150529"
+
+  def containerDepSettings = {
     Seq {
-      if(container == "jetty6") {
-        libraryDependencies ++= Seq(
-          "org.mortbay.jetty" % "jetty" % "6.1.22" % "container",
-          "org.mortbay.jetty" % "jsp-2.0" % "6.1.22" % "container"
-        )
-      } else if(container == "jetty7") {
-        libraryDependencies ++= Seq(
-          "org.eclipse.jetty" % "jetty-webapp" % "7.6.11.v20130520" % "container",
-          "org.eclipse.jetty" % "jetty-jsp" % "7.6.11.v20130520" % "container"
-        )
-      } else if(container == "jetty8") {
-        libraryDependencies ++= Seq(
-          "org.eclipse.jetty" % "jetty-webapp" % "8.1.11.v20130520" % "container",
-          "org.eclipse.jetty" % "jetty-jsp" % "8.1.11.v20130520" % "container"
-        )
-      } else if(container == "jetty9") {
-        libraryDependencies ++= Seq(
-          "org.eclipse.jetty" % "jetty-webapp" % "9.0.4.v20130625" % "container",
-          "org.eclipse.jetty" % "jetty-jsp" % "9.0.4.v20130625" % "container",
-          "org.eclipse.jetty" % "jetty-plus" % "9.0.4.v20130625" % "container"
-        )
-      } else if(container == "jetty91") {
-        libraryDependencies ++= Seq(
-          "org.eclipse.jetty" % "jetty-webapp" % "9.1.0.v20131115" % "container",
-          "org.eclipse.jetty" % "jetty-jsp" % "9.1.0.v20131115" % "container",
-          "org.eclipse.jetty" % "jetty-plus"   % "9.1.0.v20131115" % "container"
-        )
-      } else if(container == "tomcat") {
-        libraryDependencies ++= Seq(
-          "org.apache.tomcat.embed" % "tomcat-embed-core" % "7.0.22" % "container",
-          "org.apache.tomcat.embed" % "tomcat-embed-logging-juli" % "7.0.22" % "container",
-          "org.apache.tomcat.embed" % "tomcat-embed-jasper" % "7.0.22" % "container",
-          "org.eclipse.jdt.core.compiler" % "ecj" % "4.2.1" % "container"
-        )
-      } else {
-        throw new RuntimeException("""|The system property 'plugin.container' is not set to an appropriate servlet container.
-                                      |Please specify this property using the SBT flag -D.""".stripMargin)
-      }
+      libraryDependencies ++= Seq(
+        "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container",
+        "org.eclipse.jetty" % "jetty-jsp"    % jettyVersion % "container",
+        "org.eclipse.jetty" % "jetty-plus"   % jettyVersion % "container"
+      )
     }
   }
+
 }

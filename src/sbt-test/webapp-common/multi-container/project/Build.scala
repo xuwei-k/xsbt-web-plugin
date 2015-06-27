@@ -1,5 +1,5 @@
 import sbt._
-import com.earldouglas.xsbtwebplugin._
+import skinny.sbt.servlet._
 import WebappPlugin._
 import PluginKeys._
 import Keys._
@@ -32,7 +32,7 @@ object MyBuild extends Build {
 
   lazy val sharedSettings = Seq(
     scanInterval in Compile := 60,
-    libraryDependencies += "javax.servlet" % "servlet-api" % "2.5" % "provided",
+    libraryDependencies += "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
     indexFile <<= baseDirectory / "index.html",    
     getPage <<= getPageTask,
     checkPage <<= checkPageTask
@@ -55,9 +55,9 @@ object MyBuild extends Build {
     }        
   }
 
-  private def checkHelloWorld(indexFile: File, checkString: String) =
-  {
+  private def checkHelloWorld(indexFile: File, checkString: String) = {
     val value = IO.read(indexFile)
     if(value.contains(checkString)) None else Some("index.html did not contain '" + checkString + "' :\n" +value)
   }
+
 }

@@ -1,13 +1,16 @@
 import sbt._
-import com.earldouglas.xsbtwebplugin._
-import WebPlugin._
+import skinny.sbt.servlet._
+import ServletPlugin._
 import PluginKeys._
 import Keys._
 
 object MyBuild extends Build {
+
+  private val jettyVersion = "9.2.11.v20150529"
+
   override def projects = Seq(root)
 
-  lazy val root = Project("root", file("."), settings = Defaults.defaultSettings ++ webSettings ++ rootSettings)
+  lazy val root = Project("root", file("."), settings = servletSettings ++ rootSettings)
 
   def Conf = config("container")
 
@@ -17,9 +20,9 @@ object MyBuild extends Build {
     port in Conf := jettyPort,
     env in Compile := Some(file(".") / "conf" / "jetty" / "jetty-env.xml" asFile),
     libraryDependencies ++= Seq(
-      "org.eclipse.jetty" % "jetty-webapp" % "7.3.0.v20110203" % "container",
-      "org.eclipse.jetty" % "jetty-plus" % "7.3.0.v20110203" % "container",
-      "javax.servlet" % "servlet-api" % "2.5" % "provided"
+      "org.eclipse.jetty" % "jetty-webapp"       % jettyVersion % "container",
+      "org.eclipse.jetty" % "jetty-plus"         % jettyVersion % "container",
+      "javax.servlet"     % "javax.servlet-api"  % "3.1.0"      % "provided"
     ),
     getPage := getPageTask,
     checkPage <<= checkPageTask
@@ -35,7 +38,8 @@ object MyBuild extends Build {
   }
 
   lazy val checkPage = InputKey[Unit]("check-page")
-  
+
+  // TODO: InputTask
   def checkPageTask = InputTask(_ => complete.Parsers.spaceDelimited("<arg>")) { result =>
     (getPage, result) map {
       (gp, args) =>
@@ -43,9 +47,9 @@ object MyBuild extends Build {
     }        
   }
 
-  private def checkHelloWorld(checkString: String) =
-  {
+  private def checkHelloWorld(checkString: String) = {
     val value = IO.read(indexFile)
     if(value.contains(checkString)) None else Some("index.html did not contain '" + checkString + "' :\n" +value)
   }
+
 }

@@ -1,1 +1,1 @@
-libraryDependencies += "org.eclipse.jetty" % "jetty-annotations" % "9.1.0.v20131115" % "container"
+libraryDependencies += "org.eclipse.jetty" % "jetty-annotations" % "9.2.11.v20150529" % "container"

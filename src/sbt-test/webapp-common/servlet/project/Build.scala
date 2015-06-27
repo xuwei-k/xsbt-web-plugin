@@ -1,6 +1,6 @@
 import sbt._
-import com.earldouglas.xsbtwebplugin._
-import WebPlugin._
+import skinny.sbt.servlet._
+import ServletPlugin._
 import PluginKeys._
 import Keys._
 import ContainerDep.containerDepSettings
@@ -8,7 +8,7 @@ import ContainerDep.containerDepSettings
 object MyBuild extends Build {
   override def projects = Seq(root)
 
-  lazy val root = Project("root", file("."), settings = Defaults.defaultSettings ++ webSettings ++ rootSettings)
+  lazy val root = Project("root", file("."), settings = servletSettings ++ rootSettings)
 
   def jettyPort = 7123
 
@@ -17,7 +17,7 @@ object MyBuild extends Build {
   lazy val rootSettings = containerDepSettings ++ Seq(
     port in Conf := jettyPort,
     scanInterval in Compile := 60,
-    libraryDependencies += "javax.servlet" % "servlet-api" % "2.5" % "provided",
+    libraryDependencies += "javax.servlet" % "javax.servlet-api" % "3.1.0" % "provided",
     getPage := getPageTask,
     checkPage <<= checkPageTask
   )
@@ -40,9 +40,9 @@ object MyBuild extends Build {
     }        
   }
 
-  private def checkHelloWorld(checkString: String) =
-  {
+  private def checkHelloWorld(checkString: String) = {
     val value = IO.read(indexFile)
     if(value.contains(checkString)) None else Some("index.html did not contain '" + checkString + "' :\n" +value)
   }
+
 }

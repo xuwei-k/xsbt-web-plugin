@@ -1,7 +1,5 @@
 scriptedBufferLog := false
-
 ScriptedPlugin.scriptedSettings
-
 scriptedLaunchOpts <+= version { "-Dplugin.version=" + _ }
 
 /* Replace the default scripted task so we can run certain tests once for each
@@ -34,7 +32,7 @@ scripted <<= InputTask(_ => complete.Parsers.spaceDelimited("<arg>")) { result =
         }
         // run the shared container tests once for each supported container
         if(!containerTests.isEmpty) {
-          val supportedContainers = Seq("jetty6", "jetty7", "jetty8", "jetty9", "jetty91", "tomcat")
+          val supportedContainers = Seq("jetty9")
           supportedContainers.foreach { container =>
             println("===== Shared container tests for " + container + " =====")
             val containerOpt = "-Dplugin.container=" + container

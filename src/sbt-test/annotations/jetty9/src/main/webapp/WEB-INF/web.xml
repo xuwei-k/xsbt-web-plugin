@@ -8,7 +8,7 @@
 
   <servlet>
     <servlet-name>xwp template</servlet-name>
-    <servlet-class>com.earldouglas.xwptemplate.XwpTemplateServlet</servlet-class>
+    <servlet-class>example.xwptemplate.XwpTemplateServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
