@@ -15,7 +15,7 @@ The version implementation allows to reload Scalate templates without restarting
 Add this sbt plugin to your `project/plugins.sbt`.
 
 ```scala
-addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "0.1")
+addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "1.4.0.RC1")
 ```
 
 ### build.sbt
