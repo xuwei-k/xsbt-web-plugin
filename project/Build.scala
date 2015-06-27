@@ -9,7 +9,7 @@ object SbtJettyPlugin extends Build {
     settings = Seq(
       organization := "org.skinny-framework",
       name := "sbt-servlet-plugin",
-      version := "0.1-SNAPSHOT",
+      version := "1.4.0.RC1",
       sbtPlugin := true,
       scalacOptions += "-deprecation",
       incOptions := sbt.inc.IncOptions.Default,
