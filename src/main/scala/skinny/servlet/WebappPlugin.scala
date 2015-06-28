@@ -28,8 +28,7 @@ object WebappPlugin extends Plugin {
     env := None,
     webInfIncludeJarPattern := None,
     deployment <<= (webappResources, fullClasspath in classpathConfig, scanDirectories, scanInterval, env, webInfIncludeJarPattern) map {
-      (rs, cp, sd, si, env, wijp) =>
-        Deployment(rs, cp.map(_.data), sd, si, env, wijp)
+      (rs, cp, sd, si, env, wijp) => Deployment(rs, cp.map(_.data), sd, si, env, wijp)
     }
   )
 

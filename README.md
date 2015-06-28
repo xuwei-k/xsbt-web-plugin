@@ -4,6 +4,8 @@ An sbt plugin to build Servlet applications which is based on xsbt-web-plugin 0.
 xsbt-web-plugin 0.9 is very suitable for our use case.
 The version implementation allows to reload Scalate templates without restarting Servlet containers and Servlet invocation is faster than 1.x.
 
+[![Build Status](https://travis-ci.org/skinny-framework/sbt-servlet-plugin.svg?branch=master)](https://travis-ci.org/skinny-framework/sbt-servlet-plugin)
+
 ## Getting started 
 
 ### project/plugins.sbt
@@ -30,7 +32,6 @@ libraryDependencies ++= Seq(
   "org.eclipse.jetty" % "jetty-plus"   % "9.1.0.v20131115" % "container"
 )
 ```
-
 
 ## License
 

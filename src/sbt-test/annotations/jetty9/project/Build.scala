@@ -1,10 +1,9 @@
-import sbt._
-import skinny.servlet._
-import ServletPlugin._
-import ServletKeys._
-import Keys._
+import sbt._, Keys._
+import skinny.servlet.ServletPlugin._
+import skinny.servlet.ServletKeys._
 
 object MyBuild extends Build {
+
   override def projects = Seq(root)
 
   lazy val root = Project("root", file("."), settings = servletSettings ++ rootSettings)
@@ -30,16 +29,16 @@ object MyBuild extends Build {
 
   lazy val checkPage = InputKey[Unit]("check-page")
   
-  def checkPageTask = InputTask(_ => complete.Parsers.spaceDelimited("<arg>")) { result =>
+  def checkPageTask = InputTask.apply(_ => complete.Parsers.spaceDelimited("<arg>")) { result =>
     (getPage, result) map {
-      (gp, args) =>
-      checkHelloWorld(args.mkString(" ")) foreach error
+      (gp, args) => checkHelloWorld(args.mkString(" ")) foreach sys.error
     }        
   }
 
-  private def checkHelloWorld(checkString: String) =
-  {
+  private def checkHelloWorld(checkString: String) = {
     val value = IO.read(indexFile)
-    if(value.contains(checkString)) None else Some("index.html did not contain '" + checkString + "' :\n" +value)
+    if (value.contains(checkString)) None
+    else Some("index.html did not contain '" + checkString + "' :\n" +value)
   }
+
 }
