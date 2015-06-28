@@ -17,17 +17,16 @@ object Runners {
   private class RunnerLoader(runnerClassName: String, urls: Array[URL],
       parent: ClassLoader) extends LoaderBase(urls, parent) {
     def doLoadClass(className: String): Class[_] = {
-      if (isRunnerClass(className))
-        findClass(className)
-      else
-        parent.loadClass(className)
+      if (isRunnerClass(className)) findClass(className)
+      else parent.loadClass(className)
     }
 
-    private def isRunnerClass(className: String) =
+    private def isRunnerClass(className: String) = {
       className == runnerClassName || className.startsWith(runnerClassName + "$")
+    }
   }
 
-  private def filters(packages: Seq[String]): ((String) => Boolean, (String) => Boolean) = {
+  private def toFilters(packages: Seq[String]): ((String) => Boolean, (String) => Boolean) = {
     def filter(name: String) = packages.exists(p => name.startsWith(p + "."))
     def notFilter(name: String) = !filter(name)
 
@@ -36,7 +35,7 @@ object Runners {
 
   def makeInstance[If: Manifest](loader: ClassLoader, packages: Seq[String], implName: String): If = {
     val baseLoader = manifest[If].runtimeClass.getClassLoader
-    val (filter, notFilter) = filters(packages)
+    val (filter, notFilter) = toFilters(packages)
 
     // A loader that can load both container classes and SBT classes
     val dualLoader = new DualLoader(baseLoader, notFilter, x => true, loader, filter, x => false)
@@ -47,7 +46,8 @@ object Runners {
     cls.getConstructor().newInstance().asInstanceOf[If]
   }
 
-  def makeInstance[If, Im <: If](loader: ClassLoader, packages: Seq[String])(implicit ImM: Manifest[Im]): If =
+  def makeInstance[If, Im <: If](loader: ClassLoader, packages: Seq[String])(implicit ImM: Manifest[Im]): If = {
     makeInstance(loader, packages, ImM.toString)
+  }
 
 }

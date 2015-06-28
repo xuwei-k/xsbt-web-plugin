@@ -3,7 +3,7 @@ import sbt.Keys._
 
 /**
  * Used by the scripted tests in the group 'webapp-common'.  It is used to
- * specify container dependendencies based on a system property.  This allows
+ * specify container dependencies based on a system property.  This allows
  * our custom scripted configuration to run the same tests for all of the
  * supported servlet containers.
  */

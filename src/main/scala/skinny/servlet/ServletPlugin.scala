@@ -1,7 +1,6 @@
 package skinny.servlet
 
 import sbt._
-import Keys._
 import ServletKeys._
 
 object ServletPlugin extends Plugin {
@@ -19,5 +18,11 @@ object ServletPlugin extends Plugin {
         }
       ) ++ WarPlugin.globalWarSettings
   }
+
+  def webappSettings: Seq[Setting[_]] = WebappPlugin.webappSettings
+
+  def webappSettings(config: Configuration): Seq[Setting[_]] = WebappPlugin.webappSettings(config)
+
+  def globalWarSettings: Seq[Setting[_]] = WarPlugin.globalWarSettings
 
 }

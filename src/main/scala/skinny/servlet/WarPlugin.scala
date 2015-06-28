@@ -70,7 +70,7 @@ object WarPlugin extends Plugin {
           IO.delete(files)
           IO.deleteIfEmpty(dirs.toSet)
           postProcess(warPath)
-          warPath ** (-filter) x (relativeTo(warPath) | flat)
+          warPath ** (-filter) pair (relativeTo(warPath) | flat)
       }
 
   def warSettings0(classpathConfig: Configuration): Seq[Setting[_]] =
@@ -88,12 +88,13 @@ object WarPlugin extends Plugin {
 
   private def warSettings0: Seq[Setting[_]] = warSettings0(DefaultClasspathConf)
 
-  def globalWarSettings: Seq[Setting[_]] =
-    Seq(addArtifact(artifact in (DefaultConf, packageWar),
-      packageWar in DefaultConf): _*)
+  def globalWarSettings: Seq[Setting[_]] = {
+    Seq(addArtifact(artifact in (DefaultConf, packageWar), packageWar in DefaultConf): _*)
+  }
 
-  private def warSettings(classpathConfig: Configuration): Seq[Setting[_]] =
+  private def warSettings(classpathConfig: Configuration): Seq[Setting[_]] = {
     inConfig(DefaultConf)(warSettings0(classpathConfig)) ++ globalWarSettings
+  }
 
   private def warSettings: Seq[Setting[_]] = warSettings(DefaultClasspathConf)
 

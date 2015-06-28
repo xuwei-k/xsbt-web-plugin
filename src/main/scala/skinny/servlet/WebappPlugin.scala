@@ -3,7 +3,6 @@ package skinny.servlet
 import sbt._
 import Keys._
 import ServletKeys._
-import classpath.ClasspathUtilities._
 import WarPlugin.warSettings0
 
 object WebappPlugin extends Plugin {

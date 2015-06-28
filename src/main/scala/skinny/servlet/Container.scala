@@ -15,6 +15,8 @@ import scala.xml.NodeSeq
 
 case class Container(name: String) {
 
+  type SettingSeq = Seq[Setting[_]]
+
   def Configuration = config(name).hide
   def attribute = AttributeKey[Runner](name)
   def runner = attribute
@@ -49,7 +51,7 @@ case class Container(name: String) {
 
   }
 
-  def globalSettings = Seq(
+  def globalSettings: Seq[Def.Setting[Seq[Configuration]]] = Seq(
     ivyConfigurations += Configuration
   )
 
@@ -71,10 +73,15 @@ case class Container(name: String) {
     launch <<= (state) map { (state) => state.join() } dependsOn (start in Configuration),
     start <<= (state, host, port, ssl, apps, customConfiguration, configurationFiles, configurationXml) map {
       (state, host, port, ssl, apps, cc, cf, cx) =>
-        {
-          val addr = new InetSocketAddress(host, port)
-          state.start(addr, toSslSettings(ssl), state.log.asInstanceOf[AbstractLogger], apps, cc, cf, cx)
-        }
+        state.start(
+          addr = new InetSocketAddress(host, port),
+          ssl = toSslSettings(ssl),
+          logger = state.log.asInstanceOf[AbstractLogger],
+          apps = apps,
+          customConf = cc,
+          confFiles = cf,
+          confXml = cx
+        )
     },
     discoveredContexts <<= apps map discoverContexts storeAs discoveredContexts triggeredBy start,
     reload <<= reloadTask(state),
@@ -83,11 +90,22 @@ case class Container(name: String) {
       (state, host, port, ssl, apps, cc, cf, cx) =>
         {
           state.stop()
-          val addr = new InetSocketAddress(host, port)
-          state.start(addr, toSslSettings(ssl), state.log.asInstanceOf[AbstractLogger], apps, cc, cf, cx)
+          state.start(
+            addr = new InetSocketAddress(host, port),
+            ssl = toSslSettings(ssl),
+            logger = state.log.asInstanceOf[AbstractLogger],
+            apps = apps,
+            customConf = cc,
+            confFiles = cf,
+            confXml = cx
+          )
         }
     },
-    ServletKeys.test <<= (stop in Configuration) dependsOn (Keys.test in Test) dependsOn (start in Configuration),
+    ServletKeys.test <<= {
+      (stop in Configuration)
+        .dependsOn(Keys.test in Test)
+        .dependsOn(start in Configuration)
+    },
     customConfiguration := false,
     configurationFiles := Seq(),
     configurationXml := NodeSeq.Empty
@@ -96,10 +114,8 @@ case class Container(name: String) {
   def settings = globalSettings ++ inConfig(Configuration)(containerSettings)
 
   def pairToTask(conf: Configuration)(p: (String, ProjectReference)): Def.Initialize[Task[(String, Deployment)]] = {
-    (deployment in (p._2, conf)) map { (d) => (p._1, d) }
+    (deployment.in(p._2, conf)).map { (d) => (p._1, d) }
   }
-
-  type SettingSeq = Seq[Setting[_]]
 
   def deploy(map: (String, ProjectReference)*): SettingSeq = deploy(DefaultConf)(map: _*)
 
@@ -112,7 +128,12 @@ case class Container(name: String) {
   def toSslSettings(sslConfig: Option[(String, Int, String, String, String)]): Option[SslSettings] = {
     sslConfig.map {
       case (sslHost, sslPort, keystore, password, keyPassword) =>
-        SslSettings(new InetSocketAddress(sslHost, sslPort), keystore, password, keyPassword)
+        SslSettings(
+          addr = new InetSocketAddress(sslHost, sslPort),
+          keystore = keystore,
+          password = password,
+          keyPassword = keyPassword
+        )
     }
   }
 
@@ -120,13 +141,15 @@ case class Container(name: String) {
 
   def reloadParser: (State, Option[Seq[String]]) => Parser[String] = {
     import sbt.complete.DefaultParsers._
-    (state, contexts) => Space ~> token(NotSpace examples contexts.getOrElse(Seq.empty).toSet)
+    (state, contexts) => {
+      Space ~> token(NotSpace examples contexts.getOrElse(Seq.empty).toSet)
+    }
   }
 
   def reloadTask(state: TaskKey[State]): Def.Initialize[InputTask[Unit]] = {
     // TODO: method apply in object InputTask is deprecated: Use another InputTask constructor or the `Def.inputTask` macro.
     InputTask.apply(loadForParser(discoveredContexts)(reloadParser)) { (result: TaskKey[String]) =>
-      (state, result) map { (state: Types.Id[State], context: Types.Id[String]) => state.reload(context) }
+      (state, result).map { (state: Types.Id[State], context: Types.Id[String]) => state.reload(context) }
     }
   }
 
