@@ -31,11 +31,11 @@ class Jetty9Runner extends Runner {
     confFiles: Seq[File],
     confXml: NodeSeq) {
 
-    if (server != null) {
+    if (runningServer != null) {
       return
     }
     try {
-      server = new Server
+      runningServer = new Server
       if (customConf) {
         configureCustom(confFiles, confXml)
       } else {
@@ -46,15 +46,15 @@ class Jetty9Runner extends Runner {
         }
         configureContexts(apps)
       }
-      server.start()
+      runningServer.start()
     } catch {
       case t: Throwable =>
-        server = null
+        runningServer = null
         throw t
     }
   }
 
-  def reload(contextPath: String) {
+  def reload(contextPath: String): Unit = {
     val (context, deployment) = contexts(contextPath)
     context.stop()
     setContextLoader(context, deployment.classpath)
@@ -62,25 +62,31 @@ class Jetty9Runner extends Runner {
   }
 
   def join(): Unit = {
-    if (server != null) {
-      server.join()
+    if (runningServer != null) {
+      runningServer.join()
     }
   }
 
   def stop(): Unit = {
-    if (server != null) {
-      server.stop()
+    if (runningServer != null) {
+      runningServer.stop()
+      runningServer.removeBeans()
+      runningServer.clearAttributes()
+      runningServer.destroy()
     }
-    server = null
+    runningServer = null
   }
 
   // ------------------------------------------------------------------------------------------
 
+  // ---
   // unused but don't delete these fields
-  private[this] val forceJettyLoad: Class[Server] = classOf[Server]
-  private[this] val forceJettyLoad2: Class[NetworkTrafficServerConnector] = classOf[NetworkTrafficServerConnector]
+  private[this] val _forceJettyLoad = classOf[Server]
+  private[this] val _forceJettyLoad2 = classOf[NetworkTrafficServerConnector]
+  // ---
 
-  private[this] var server: Server = null
+  private[this] var runningServer: Server = null
+
   private[this] var contexts: Map[String, (WebAppContext, Deployment)] = Map()
 
   private[this] def setContextLoader(context: WebAppContext, classpath: Seq[File]) {
@@ -96,10 +102,10 @@ class Jetty9Runner extends Runner {
         new AnnotationConfiguration
       )
     } catch {
-      case e: NoClassDefFoundError => Nil
+      case e: NoClassDefFoundError => Seq.empty
     }
 
-  private[this] lazy val configs: Seq[Configuration] =
+  private[this] lazy val configs: Seq[Configuration] = {
     Seq(
       new WebInfConfiguration,
       new WebXmlConfiguration,
@@ -107,6 +113,7 @@ class Jetty9Runner extends Runner {
       new FragmentConfiguration,
       new JettyWebXmlConfiguration
     ) ++ annotationConfigs
+  }
 
   private[this] def setEnvConfiguration(context: WebAppContext, file: File) {
     val config = new EnvConfiguration { setJettyEnvXml(file.toURI.toURL) }
@@ -116,11 +123,11 @@ class Jetty9Runner extends Runner {
 
   private[this] def deploy(contextPath: String, deployment: Deployment) = {
     import deployment._
-    val context = new WebAppContext()
+    val context = new WebAppContext
     context.setContextPath(contextPath)
 
     if (Option(System.getProperty("os.name")) exists { x => x.toLowerCase.startsWith("windows") }) {
-      context.getInitParams().put("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false")
+      context.getInitParams.put("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false")
     }
     context.setBaseResource(new ResourceCollection(
       webappResources.map(_.getPath).toArray
@@ -132,7 +139,9 @@ class Jetty9Runner extends Runner {
       case Some(e) => setEnvConfiguration(context, e)
       case None => context.setConfigurations(configs.toArray)
     }
-    webInfIncludeJarPattern.foreach(context.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", _))
+    webInfIncludeJarPattern.foreach(patttern =>
+      context.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", patttern)
+    )
 
     if (!scanDirectories.isEmpty) {
       val scanner = new Scanner(
@@ -152,29 +161,29 @@ class Jetty9Runner extends Runner {
     }
     val coll = new ContextHandlerCollection()
     coll.setHandlers(contexts.toArray)
-    server.setHandler(coll)
+    runningServer.setHandler(coll)
   }
 
   private[this] def configureCustom(confFiles: Seq[File], confXml: NodeSeq) {
-    confXml.foreach(x => new XmlConfiguration(x.toString).configure(server))
-    confFiles.foreach(f => new XmlConfiguration(f.toURI.toURL).configure(server))
+    confXml.foreach(x => new XmlConfiguration(x.toString).configure(runningServer))
+    confFiles.foreach(f => new XmlConfiguration(f.toURI.toURL).configure(runningServer))
   }
 
   private[this] def configureConnector(addr: InetSocketAddress) {
-    val conn = new ServerConnector(server)
+    val conn = new ServerConnector(runningServer)
     conn.setHost(addr.getAddress.getHostAddress)
     conn.setPort(addr.getPort)
-    server.addConnector(conn)
+    runningServer.addConnector(conn)
   }
 
   private[this] def configureSecureConnector(ssl: SslSettings) {
     val context = new SslContextFactory()
     context.setKeyStorePath(ssl.keystore)
     context.setKeyStorePassword(ssl.password)
-    val conn = new ServerConnector(server, context)
+    val conn = new ServerConnector(runningServer, context)
     conn.setHost(ssl.addr.getAddress.getHostAddress)
     conn.setPort(ssl.addr.getPort)
-    server.addConnector(conn)
+    runningServer.addConnector(conn)
   }
 
   private class DelegatingLogger(delegate: AbstractLogger) extends LoggerBase(delegate) with JLogger {

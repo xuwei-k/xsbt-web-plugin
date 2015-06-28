@@ -1,5 +1,7 @@
 package skinny.servlet
 
+import scala.language.implicitConversions
+
 import java.net.InetSocketAddress
 
 import sbinary.DefaultProtocol.StringFormat
@@ -90,6 +92,7 @@ case class Container(name: String) {
       (state, host, port, ssl, apps, cc, cf, cx) =>
         {
           state.stop()
+
           state.start(
             addr = new InetSocketAddress(host, port),
             ssl = toSslSettings(ssl),
