@@ -29,9 +29,11 @@ Add Jetty dependencies into "container" scope.
 ```scala
 import skinny.servlet._, ServletPlugin._, ServletKeys._
 
+lazy val jettyVersion = "9.2.11.v20150529"
+
 libraryDependencies ++= Seq(
-  "org.eclipse.jetty" % "jetty-webapp" % "9.1.0.v20131115" % "container",
-  "org.eclipse.jetty" % "jetty-plus"   % "9.1.0.v20131115" % "container"
+  "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container",
+  "org.eclipse.jetty" % "jetty-plus"   % jettyVersion % "container"
 )
 ```
 
