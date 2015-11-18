@@ -13,7 +13,7 @@ The version implementation allows to reload Scalate templates without restarting
 Add this sbt plugin to your `project/plugins.sbt`.
 
 ```scala
-addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.0.1")
+addSbtPlugin("org.skinny-framework" % "sbt-servlet-plugin" % "2.0.2")
 ```
 
 ### build.sbt
@@ -29,7 +29,7 @@ Add Jetty dependencies into "container" scope.
 ```scala
 import skinny.servlet._, ServletPlugin._, ServletKeys._
 
-lazy val jettyVersion = "9.2.13.v20150730"
+lazy val jettyVersion = "9.2.14.v20151106"
 
 libraryDependencies ++= Seq(
   "org.eclipse.jetty" % "jetty-webapp" % jettyVersion % "container",
