@@ -15,7 +15,8 @@ object WarPlugin extends Plugin {
   }
 
   def packageWarTask(classpathConfig: Configuration): Initialize[Task[Seq[(File, String)]]] =
-    (classesAsJar,
+    (
+      classesAsJar,
       name,
       version,
       webappResources,

@@ -29,7 +29,8 @@ class Jetty9Runner extends Runner {
     apps: Seq[(String, Deployment)],
     customConf: Boolean,
     confFiles: Seq[File],
-    confXml: NodeSeq) {
+    confXml: NodeSeq
+  ) {
 
     if (runningServer != null) {
       return
@@ -140,8 +141,7 @@ class Jetty9Runner extends Runner {
       case None => context.setConfigurations(configs.toArray)
     }
     webInfIncludeJarPattern.foreach(patttern =>
-      context.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", patttern)
-    )
+      context.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", patttern))
 
     if (!scanDirectories.isEmpty) {
       val scanner = new Scanner(

@@ -60,7 +60,8 @@ trait Runner {
     apps: Seq[(String, Deployment)],
     customConf: Boolean,
     confFiles: Seq[File],
-    confXml: NodeSeq): Unit
+    confXml: NodeSeq
+  ): Unit
 
   def reload(context: String): Unit
 

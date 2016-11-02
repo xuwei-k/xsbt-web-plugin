@@ -9,7 +9,7 @@ import sbt.Keys._
  */
 object ContainerDep {
 
-  private val jettyVersion = "9.2.11.v20150529"
+  private val jettyVersion = "9.2.19.v20160908"
 
   def containerDepSettings = {
     Seq {

@@ -6,4 +6,5 @@ case class SslSettings(
   addr: InetSocketAddress,
   keystore: String,
   password: String,
-  keyPassword: String)
+  keyPassword: String
+)

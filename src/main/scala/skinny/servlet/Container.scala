@@ -24,7 +24,8 @@ case class Container(name: String) {
   def runner = attribute
 
   private implicit def attributeToRunner[Runner](
-    key: AttributeKey[Runner])(implicit state: State): Runner = {
+    key: AttributeKey[Runner]
+  )(implicit state: State): Runner = {
     state.get(key).get
   }
 
@@ -58,57 +59,56 @@ case class Container(name: String) {
   )
 
   def containerSettings = Seq(
-    managedClasspath <<= (classpathTypes, update) map { (ct, up) => managedJars(Configuration, ct, up) },
-    fullClasspath <<= managedClasspath,
-    onLoad in Global <<= (onLoad in Global, thisProjectRef) { (onLoad, containerProject) =>
-      (state) => Impl.newRunner(containerProject, onLoad(state))
+    managedClasspath := managedJars(Configuration, classpathTypes.value, update.value),
+    fullClasspath := managedClasspath.value,
+    onLoad in Global := {
+      val (load, containerProject) = ((onLoad in Global).value, thisProjectRef.value)
+      (state) => Impl.newRunner(containerProject, load(state))
     },
-    onUnload in Global <<= (onUnload in Global) { (onUnload) =>
+    onUnload in Global := {
+      val load = (onUnload in Global).value
       (state) => {
         state.stop()
-        onUnload(state)
+        load(state)
       }
     },
     host := "0.0.0.0",
     port := 8080,
     ssl := None,
-    launch <<= (state) map { (state) => state.join() } dependsOn (start in Configuration),
-    start <<= (state, host, port, ssl, apps, customConfiguration, configurationFiles, configurationXml) map {
-      (state, host, port, ssl, apps, cc, cf, cx) =>
-        state.start(
-          addr = new InetSocketAddress(host, port),
-          ssl = toSslSettings(ssl),
-          logger = state.log.asInstanceOf[AbstractLogger],
-          apps = apps,
-          customConf = cc,
-          confFiles = cf,
-          confXml = cx
-        )
+    launch := ((state) map { (state) => state.join() } dependsOn (start in Configuration)).value,
+    start := {
+      val (cc, cf, cx) = (customConfiguration.value, configurationFiles.value, configurationXml.value)
+      state.value.start(
+        addr = new InetSocketAddress(host.value, port.value),
+        ssl = toSslSettings(ssl.value),
+        logger = state.value.log.asInstanceOf[AbstractLogger],
+        apps = apps.value,
+        customConf = cc,
+        confFiles = cf,
+        confXml = cx
+      )
     },
-    discoveredContexts <<= apps map discoverContexts storeAs discoveredContexts triggeredBy start,
-    reload <<= reloadTask(state),
-    stop <<= (state) map { (state) => state.stop() },
-    restart <<= (state, host, port, ssl, apps, customConfiguration, configurationFiles, configurationXml) map {
-      (state, host, port, ssl, apps, cc, cf, cx) =>
-        {
-          state.stop()
-
-          state.start(
-            addr = new InetSocketAddress(host, port),
-            ssl = toSslSettings(ssl),
-            logger = state.log.asInstanceOf[AbstractLogger],
-            apps = apps,
-            customConf = cc,
-            confFiles = cf,
-            confXml = cx
-          )
-        }
+    discoveredContexts := (apps map discoverContexts storeAs discoveredContexts triggeredBy start).value,
+    reload := reloadTask(state).evaluated,
+    stop := ((state) map { (state) => state.stop() }).value,
+    restart := {
+      val (cc, cf, cx) = (customConfiguration.value, configurationFiles.value, configurationXml.value)
+      state.value.stop()
+      state.value.start(
+        addr = new InetSocketAddress(host.value, port.value),
+        ssl = toSslSettings(ssl.value),
+        logger = state.value.log.asInstanceOf[AbstractLogger],
+        apps = apps.value,
+        customConf = cc,
+        confFiles = cf,
+        confXml = cx
+      )
     },
-    ServletKeys.test <<= {
+    ServletKeys.test := {
       (stop in Configuration)
         .dependsOn(Keys.test in Test)
         .dependsOn(start in Configuration)
-    },
+    }.value,
     customConfiguration := false,
     configurationFiles := Seq(),
     configurationXml := NodeSeq.Empty
@@ -124,7 +124,7 @@ case class Container(name: String) {
 
   def deploy(conf: Configuration)(map: (String, ProjectReference)*): SettingSeq = {
     settings ++ inConfig(Configuration)(Seq(
-      apps <<= map.map(pairToTask(conf)).join
+      apps := map.map(pairToTask(conf)).join.value
     ))
   }
 
