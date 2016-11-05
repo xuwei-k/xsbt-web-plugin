@@ -1,6 +1,6 @@
 scriptedBufferLog := false
 ScriptedPlugin.scriptedSettings
-scriptedLaunchOpts <+= version { "-Dplugin.version=" + _ }
+scriptedLaunchOpts += s"-Dplugin.version=${version.value}"
 
 /* Replace the default scripted task so we can run certain tests once for each
  * supported servlet container.
