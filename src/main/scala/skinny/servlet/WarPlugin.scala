@@ -15,29 +15,18 @@ object WarPlugin extends Plugin {
   }
 
   def packageWarTask(classpathConfig: Configuration): Initialize[Task[Seq[(File, String)]]] =
-    (
-      classesAsJar,
-      name,
-      version,
-      webappResources,
-      target,
-      fullClasspath in classpathConfig in packageWar,
-      excludeFilter,
-      warPostProcess,
-      streams
-    ) map {
-        (classesAsJar, name, version, webappResources, target, fullClasspath, filter, postProcess, s) =>
-
-          val classpath = fullClasspath.map(_.data)
-          val warPath = target / "webapp"
-          val log = s.log.asInstanceOf[AbstractLogger]
+    Def.task {
+          val filter = excludeFilter.value
+          val classpath = (fullClasspath in classpathConfig in packageWar).value.map(_.data)
+          val warPath = target.value / "webapp"
+          val log = streams.value.log.asInstanceOf[AbstractLogger]
           val webInfPath = warPath / "WEB-INF"
           val webLibDirectory = webInfPath / "lib"
           val classesTargetDirectory = webInfPath / "classes"
 
           val (libs, directories) = classpath.toList.filter(_.exists).partition(!_.isDirectory)
           val wcToCopy = for {
-            dir <- webappResources.reverse
+            dir <- webappResources.value.reverse
             file <- (dir ** (-filter)).get
             target = Path.rebase(dir, warPath)(file).get
           } yield (file, target)
@@ -52,7 +41,7 @@ object WarPlugin extends Plugin {
           val copiedLibs = copyFlat(libs, webLibDirectory)
 
           val toRemove = scala.collection.mutable.HashSet((warPath ** "*").get.toSeq: _*)
-          if (classesAsJar) {
+          if (classesAsJar.value) {
             val classesAndResources = for {
               dir <- directories.reverse
               file <- (dir ** (-filter)).get
@@ -80,9 +69,9 @@ object WarPlugin extends Plugin {
           }
           IO.delete(files)
           IO.deleteIfEmpty(dirs.toSet)
-          postProcess(warPath)
+          warPostProcess.value(warPath)
           warPath ** (-filter) pair (relativeTo(warPath) | flat)
-      }
+    }
 
   def warSettings0(classpathConfig: Configuration): Seq[Setting[_]] = {
     packageTaskSettings(packageWar, packageWarTask(classpathConfig)) ++
