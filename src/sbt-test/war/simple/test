@@ -5,7 +5,7 @@ $ exists target/webapp/WEB-INF/web.xml
 $ absent target/webapp/WEB-INF/classes
 $ absent target/webapp/WEB-INF/lib/javax.servlet-api-3.0.1.jar
 $ exists target/webapp/WEB-INF/lib/test_2.10-0.1.0-SNAPSHOT.jar
-$ exists target/webapp/WEB-INF/lib/scala-library.jar
+> existsScalaLibraryJar
 
 > clean
 $ absent target/webapp
