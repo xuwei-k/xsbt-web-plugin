@@ -150,12 +150,9 @@ case class Container(name: String) {
   }
 
   def reloadTask(state: TaskKey[State]): Def.Initialize[InputTask[Unit]] = {
-    // TODO: method apply in object InputTask is deprecated: Use another InputTask constructor or the `Def.inputTask` macro.
-    InputTask.apply(loadForParser(discoveredContexts)(reloadParser)) { (result: TaskKey[String]) =>
-      Def.task {
-        state.value.reload(result.value)
-      }
+    val parser = loadForParser(discoveredContexts)(reloadParser)
+    Def.inputTask {
+      state.value.reload(parser.parsed)
     }
   }
-
 }
