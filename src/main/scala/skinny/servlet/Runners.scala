@@ -40,7 +40,7 @@ object Runners {
     // A loader that can load both container classes and SBT classes
     val dualLoader = new DualLoader(baseLoader, notFilter, x => true, loader, filter, x => false)
     // A loader than can load the Runner classes and their dependencies
-    val runnerLoader = new RunnerLoader(implName, Array(IO.classLocation[If].toURI.toURL), dualLoader)
+    val runnerLoader = new RunnerLoader(implName, Array(IO.classLocationFile[If].toURI.toURL), dualLoader)
 
     val cls = Class.forName(implName, true, runnerLoader)
     cls.getConstructor().newInstance().asInstanceOf[If]
