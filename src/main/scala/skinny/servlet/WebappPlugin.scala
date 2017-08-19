@@ -5,7 +5,7 @@ import Keys._
 import ServletKeys._
 import WarPlugin.warSettings0
 
-object WebappPlugin extends Plugin {
+object WebappPlugin extends AutoPlugin {
 
   def auxCompileTask = Def.task {
     val _ = compile.value

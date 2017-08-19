@@ -6,7 +6,7 @@ import Keys._
 import ServletKeys._
 import _root_.sbt.Defaults.{ packageTaskSettings, inDependencies }
 
-object WarPlugin extends Plugin {
+object WarPlugin extends AutoPlugin {
 
   private def copyFlat(sources: Iterable[File], destinationDirectory: File): Set[File] = {
     IO.copy(sources.map { source =>
@@ -98,4 +98,5 @@ object WarPlugin extends Plugin {
 
   private def warSettings: Seq[Setting[_]] = warSettings(DefaultClasspathConf)
 
+  override val projectSettings = globalWarSettings
 }
