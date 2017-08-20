@@ -1,9 +1,12 @@
 package skinny.servlet
 
 import sbt._
-import ServletKeys._
 
-object ServletPlugin extends Plugin {
+object ServletPlugin extends AutoPlugin {
+
+  val autoImport = ServletKeys
+
+  import autoImport._
 
   lazy val container = Container("container")
 
@@ -25,4 +28,5 @@ object ServletPlugin extends Plugin {
 
   def globalWarSettings: Seq[Setting[_]] = WarPlugin.globalWarSettings
 
+  override def projectSettings = servletSettings
 }
