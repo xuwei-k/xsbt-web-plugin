@@ -82,8 +82,7 @@ object WarPlugin extends AutoPlugin {
         warPostProcess := { _ => () },
         classesAsJar := false,
         `package` := (packageWar dependsOn packageWebapp).value,
-        packageWebapp := packageWarTask(classpathConfig).value
-      )
+        packageWebapp := packageWarTask(classpathConfig).value)
   }
 
   private def warSettings0: Seq[Setting[_]] = warSettings0(DefaultClasspathConf)
